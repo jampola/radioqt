@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Prefs</class>
+ <widget class="QDialog" name="Prefs">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>250</width>
+    <height>315</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>250</width>
+    <height>315</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>250</width>
+    <height>315</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>231</width>
+     <height>261</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Preferences</string>
+   </property>
+   <widget class="QCheckBox" name="optBoolTooltips">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>201</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Show song in tooltip</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="optBoolMinimized">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>70</y>
+      <width>201</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Start minimized</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>191</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font-weight: bold;</string>
+    </property>
+    <property name="text">
+     <string>General</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="leStationsJSON">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>140</y>
+      <width>201</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string>/home/james/.stations.json</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>120</y>
+      <width>201</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Stations JSON</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
+      <width>191</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font-weight: bold;</string>
+    </property>
+    <property name="text">
+     <string>Paths</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="leFavsJSON">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>190</y>
+      <width>201</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string>/home/james/.radiofavs.json</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>170</y>
+      <width>201</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Favourites JSON</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="btnClose">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>280</y>
+     <width>231</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Save and Close</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
