@@ -212,8 +212,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionAddStation.triggered.connect(self.show_addstation_window)
         self.actionAbout.triggered.connect(self.show_about_window)
         self.btnFav.clicked.connect(self.add_favorite)
-        self.actionMinimize.triggered.connect(self.hide)
-        self.menuActionMinimize.triggered.connect(self.hide)
+        # self.actionMinimize.triggered.connect(self.hide)
+        self.menuActionMinimize.triggered.connect(self.show_hide_app)
 
         self.playback_start_icon = QtGui.QIcon("/usr/share/radioqt/icons/media-playback-start.png")
         self.playback_stop_icon = QtGui.QIcon("/usr/share/radioqt/icons/media-playback-stop.png")
@@ -249,7 +249,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def quit_app(self):
         sys.exit()
 
-    def show_hide_app(self, reason):
+    def show_hide_app(self, reason=None):
+        if not reason:
+            if self.app_show:
+                self.hide()
+                self.app_show = False
+            else:
+                self.show()
+                self.app_show = True
+
         if reason == 2:
             if self.app_show:
                 self.hide()
@@ -258,7 +266,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.show()
                 self.app_show = True
 
-        if reason == 'show': # Called from configparser options
+        elif reason == 'show': # Called from configparser options
             self.show()
             self.app_show = True
 
