@@ -17,7 +17,7 @@ Ensure both of the above dependencies are installed and run ```radio.py``` just 
 
 Running the install script will copy any of the image assets and configuration files to their appropriate location. If you have a precompiled binary, it will copy it from dist/radio to /usr/local/bin/radioqt
 
-# Building a a Binary
+# Building the Binary
 
 ```pip3 install pyinstaller```
 
