@@ -46,9 +46,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>92</y>
+      <y>112</y>
       <width>381</width>
-      <height>251</height>
+      <height>231</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -227,6 +227,44 @@ padding-left: 5px;</string>
      <string/>
     </property>
    </widget>
+   <widget class="QSlider" name="sliderVolume">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>90</y>
+      <width>381</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="singleStep">
+     <number>5</number>
+    </property>
+    <property name="value">
+     <number>50</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickPosition">
+     <enum>QSlider::TicksAbove</enum>
+    </property>
+    <property name="tickInterval">
+     <number>5</number>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnGetStreams">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>63</y>
+      <width>111</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Get Streams</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -234,7 +272,7 @@ padding-left: 5px;</string>
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>23</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -250,6 +288,7 @@ padding-left: 5px;</string>
      <string>Options</string>
     </property>
     <addaction name="actionLog"/>
+    <addaction name="actionSearch"/>
     <addaction name="actionAddStation"/>
     <addaction name="separator"/>
     <addaction name="actionPrefs"/>
@@ -297,6 +336,11 @@ padding-left: 5px;</string>
   <action name="actionPrefs">
    <property name="text">
     <string>Preferences</string>
+   </property>
+  </action>
+  <action name="actionSearch">
+   <property name="text">
+    <string>Search</string>
    </property>
   </action>
  </widget>

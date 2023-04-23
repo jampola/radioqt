@@ -1,11 +1,9 @@
 #!/usr/bin/python3
 import vlc
 from lib.ui.mainwindow import Ui_MainWindow
-# from about import Ui_About
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QGridLayout, QWidget, QCheckBox, QSystemTrayIcon, \
-    QSpacerItem, QSizePolicy, QMenu, QAction, QStyle, qApp, QTreeWidgetItem
+from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction, QTreeWidgetItem
 import sys
 import time
 from pathlib import Path
@@ -20,6 +18,8 @@ from get_meta import streamscrobbler
 from add_station import AddStationWindow
 from about_window import AboutWindow
 from prefs_window import PrefsWindow
+from search_window import SearchWindow
+from icecast_stream_list import get_stream_list
 
 config = configparser.RawConfigParser(allow_no_value=True)
 
@@ -37,7 +37,9 @@ else:
 config.read(config_path)
 
 # Look for user defined config
+# FAVORITES = False
 FAVORITES = config['PATHS']['lefavsjson']
+# STATIONS = False
 STATIONS = config['PATHS']['lestationjson']
 
 # if no user defined config, create a file
@@ -120,11 +122,14 @@ class UpdateStatusWorker(QThread):
         self.running = False
 
     def on_message_from_main(self,data):
+        if self.running:
+            return
         self.status_message = data
         self.running = True
 
     def run(self):
         while True:
+            time.sleep(.1)
             if self.running:
                 self.signal.emit(self.status_message)
                 time.sleep(2)
@@ -165,7 +170,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Config options
         self.app_start_minimized = config.getboolean('DEFAULT','optBoolMinimized') # keep a track if the app is shown
+        # self.app_start_minimized = True # keep a track if the app is shown
         self.show_song_tooltips = config.getboolean('DEFAULT','optbooltooltips') # Show the song tooltips in tray
+        # self.show_song_tooltips = True # Show the song tooltips in tray
 
         # Assign actions for tray
         fave_action = QAction("Add to Favorites", self)
@@ -195,12 +202,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Connect other windows
         self.logform = LogWindow(config=config,favorites=FAVORITES)
         self.about = AboutWindow()
+
+        self.search_window = SearchWindow()
+        self.search_window.station_signal.connect(self.add_to_playlist)
+
         self.prefs = PrefsWindow(config=config,config_path=config_path)
+
         self.add_station = AddStationWindow()
         self.add_station.station_signal.connect(self.add_to_playlist)
         self.selected_station_signal.connect(self.add_station.edit_station)
 
         # Connecting button
+        self.btnGetStreams.clicked.connect(get_stream_list)
+        self.sliderVolume.valueChanged.connect(self.adjust_volume)
         self.btnToggle.clicked.connect(self.play_toggle)
         self.btnShuffle.clicked.connect(functools.partial(self.play_station,shuffle_url=True))
         self.twStationList.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -211,6 +225,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.menuActionQuit.triggered.connect(self.quit_app)
         self.actionAddStation.triggered.connect(self.show_addstation_window)
         self.actionAbout.triggered.connect(self.show_about_window)
+        self.actionSearch.triggered.connect(self.show_search_window)
         self.btnFav.clicked.connect(self.add_favorite)
         # self.actionMinimize.triggered.connect(self.hide)
         self.menuActionMinimize.triggered.connect(self.show_hide_app)
@@ -245,6 +260,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def show_about_window(self):
         self.about.show()
+
+    def show_search_window(self):
+        self.search_window.show()
 
     def quit_app(self):
         sys.exit()
@@ -282,6 +300,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.update_status_signal.emit("<b style='color:green;'>Song added to favorites</b>")
 
+    def set_starting_volume(self):
+        self.sliderVolume.setValue(self.mediaplayer.audio_get_volume())
+
     def recreate_playlist(self,add=False):
         self.twStationList.clear()
 
@@ -294,7 +315,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         for x in self.playlist_urls_sorted:
             QTreeWidgetItem(self.twStationList,[playlist_urls[x],x])
 
-        if add: pass
+        if add:
+            pass
 
     def menu_context_tree(self, event):
         self.menu_contextuelAlb = QtWidgets.QMenu(self.twStationList)
@@ -323,6 +345,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         self.tray_icon.showMessage("RadIO",f"{data['title']}",msecs=2000)
 
                 self.currently_playing = data['title']
+                self.set_starting_volume()
         else:
             self.lblNowPlaying.setText("Nothing Playing")
             self.lblNowStationName.setText("")
@@ -387,6 +410,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.btnToggle.setIcon(self.playback_stop_icon)
         self.lblStationName.setText(station_name)
         self.lblStatus.setText('Playing')
+
+    def set_volume(self, vol_val):
+        self.mediaplayer.audio_set_volume(vol_val)
+
+    def adjust_volume(self):
+        self.set_volume(self.sliderVolume.value())
 
     def play_toggle(self):
         if self.mediaplayer.is_playing():

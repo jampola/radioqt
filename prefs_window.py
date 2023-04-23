@@ -23,7 +23,7 @@ class PrefsWindow(QtWidgets.QWidget, Ui_Prefs):
         self.leStationsJSON.textEdited.connect(functools.partial(self.update_prefs, 'leStationJSON'))
         self.leFavsJSON.textEdited.connect(functools.partial(self.update_prefs, 'leFavsJSON'))
 
-        self.load_prefs()
+        # self.load_prefs()
 
     def close_window(self):
         self.save_prefs()

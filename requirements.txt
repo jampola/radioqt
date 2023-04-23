@@ -1,0 +1,6 @@
+httplib2==0.22.0
+pyparsing==3.0.9
+PyQt5==5.15.9
+PyQt5-Qt5==5.15.2
+PyQt5-sip==12.12.1
+python-vlc==3.0.18122
