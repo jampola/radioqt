@@ -7,9 +7,7 @@ Shoutcast/Icecast player
 Plays back shoutcast and icecast streams using VLC's Python bindings.
 
 # Requirements
-
-* python3-pyqt5
-* python3-vlc (if not using a compiled binary)
+See requirements.txt for a full list of dependencies.
 
 # Running the .py
 
@@ -27,6 +25,6 @@ Then build inside of the project folder
 
 and the resulting binary will be located in **dist/radio**
 
-# Bugs
+# Bugs / Feature Requests
 
-Send them my way: fullname [at] gmail **dot** com
+Open up an issue on the Github page and I'll take a look at it. PR's welcome :)

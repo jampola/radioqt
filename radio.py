@@ -13,13 +13,15 @@ import functools
 import configparser
 from random import shuffle
 from os import path,environ
+
 from get_meta import streamscrobbler
+from get_artwork import get_artwork_by_title_artist
+
 
 from add_station import AddStationWindow
 from about_window import AboutWindow
 from prefs_window import PrefsWindow
 from search_window import SearchWindow
-from icecast_stream_list import get_stream_list
 
 config = configparser.RawConfigParser(allow_no_value=True)
 
@@ -104,9 +106,16 @@ class GetMetaWorker(QThread):
                 except:
                     self.song = "Unable to fetch song meta data"
 
+                try:
+                    artist = self.song.split('-')[0]
+                    title = self.song.split('-')[1]
+                    get_artwork_by_title_artist(artist,title)
+                except:
+                    pass
+
                 self.signal.emit({'title':self.song})
 
-                time.sleep(4)
+                time.sleep(2)
             else:
                 return
 
@@ -213,7 +222,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.selected_station_signal.connect(self.add_station.edit_station)
 
         # Connecting button
-        self.btnGetStreams.clicked.connect(get_stream_list)
         self.sliderVolume.valueChanged.connect(self.adjust_volume)
         self.btnToggle.clicked.connect(self.play_toggle)
         self.btnShuffle.clicked.connect(functools.partial(self.play_station,shuffle_url=True))
@@ -234,6 +242,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.playback_stop_icon = QtGui.QIcon("/usr/share/radioqt/icons/media-playback-stop.png")
         self.shuffle_station = QtGui.QIcon("/usr/share/radioqt/icons/media-playlist-shuffle.png")
         self.button_favorite = QtGui.QIcon("/usr/share/radioqt/icons/emblem-favorite.png")
+
+        self._set_default_artwork()
+
 
         self.btnFav.setIcon(self.button_favorite)
         self.btnToggle.setIcon(self.playback_start_icon)
@@ -298,7 +309,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 with open(FAVORITES, 'w') as outfile:
                     json.dump(favorite_list, outfile)
 
-        self.update_status_signal.emit("<b style='color:green;'>Song added to favorites</b>")
+            self.update_status_signal.emit("<b style='color:green;'>Song added to favorites</b>")
 
     def set_starting_volume(self):
         self.sliderVolume.setValue(self.mediaplayer.audio_get_volume())
@@ -346,6 +357,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 self.currently_playing = data['title']
                 self.set_starting_volume()
+
+                # todo: explicitly check if artwork is available
+                self.now_playing = QtGui.QPixmap("/tmp/radioimg.jpg")
+                scaled = self.now_playing.scaled(128,128)
+                self.lblStationImage.setPixmap(scaled)
         else:
             self.lblNowPlaying.setText("Nothing Playing")
             self.lblNowStationName.setText("")
@@ -372,6 +388,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             json.dump(playlist_urls, outfile)
 
         self.recreate_playlist()
+
+    def _set_default_artwork(self):
+        self.now_playing = QtGui.QPixmap("/home/jbos/code/radioqt/lib/noart.png")
+        scaled = self.now_playing.scaled(128, 128)
+        self.lblStationImage.setPixmap(scaled)
 
     def _get_selected_station(self):
         getSelected = self.twStationList.selectedItems()
@@ -422,9 +443,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.mediaplayer.stop()
             self.meta_start_stop_signal.emit("stop")
             self.btnToggle.setIcon(self.playback_start_icon)
-            self.lblStationName.setText('')
-            self.lblNowPlaying.setText('')
+            self.lblStationName.setText('No Station')
+            self.lblNowPlaying.setText('Not Playing')
             self.lblStatus.setText('Stopped')
+            self._set_default_artwork()
 
     def closeEvent(self,e):
         self.get_meta.stop_thread()
