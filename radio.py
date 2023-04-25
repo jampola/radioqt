@@ -101,6 +101,7 @@ class GetMetaWorker(QThread):
         while True:
             time.sleep(1)
             if self.running:
+                art = False
                 try:
                     self.song = self.ss.getAllData(address=self.url)['metadata']['song']
                 except:
@@ -109,13 +110,13 @@ class GetMetaWorker(QThread):
                 try:
                     artist = self.song.split('-')[0]
                     title = self.song.split('-')[1]
-                    get_artwork_by_title_artist(artist,title)
+                    art = get_artwork_by_title_artist(artist,title)
                 except:
                     pass
 
-                self.signal.emit({'title':self.song})
+                self.signal.emit({'title': self.song, 'has_art': art})
 
-                time.sleep(2)
+                time.sleep(5)
             else:
                 return
 
@@ -359,9 +360,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.set_starting_volume()
 
                 # todo: explicitly check if artwork is available
-                self.now_playing = QtGui.QPixmap("/tmp/radioimg.jpg")
-                scaled = self.now_playing.scaled(128,128)
-                self.lblStationImage.setPixmap(scaled)
+                if data.get('has_art'):
+                    self.now_playing = QtGui.QPixmap("/tmp/radioimg.jpg")
+                    scaled = self.now_playing.scaled(128,128)
+                    self.lblStationImage.setPixmap(scaled)
+                else:
+                    self._set_default_artwork()
         else:
             self.lblNowPlaying.setText("Nothing Playing")
             self.lblNowStationName.setText("")
