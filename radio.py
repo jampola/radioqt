@@ -83,6 +83,7 @@ class GetMetaWorker(QThread):
         self.running = True
         self.url = ""
         self.song = ""
+        self.last_song = ""
         self.ss = streamscrobbler()
 
     def stop_thread(self,data):
@@ -108,12 +109,17 @@ class GetMetaWorker(QThread):
                     self.song = "Unable to fetch song meta data"
 
                 try:
-                    artist = self.song.split('-')[0]
-                    title = self.song.split('-')[1]
-                    art = get_artwork_by_title_artist(artist,title)
+                    if self.last_song != self.song:
+                        artist = self.song.split('-')[0]
+                        title = self.song.split('-')[1]
+                        art = get_artwork_by_title_artist(artist,title)
+                    else:
+                        art = True
                 except:
                     pass
 
+
+                self.last_song = self.song
                 self.signal.emit({'title': self.song, 'has_art': art})
 
                 time.sleep(5)
