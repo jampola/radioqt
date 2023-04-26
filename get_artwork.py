@@ -5,9 +5,12 @@ from logging import getLogger
 _logger = getLogger(__name__)
 
 def get_artwork_by_title_artist(artist, title):
-    print(f"Fetching artwork for {artist} - {title}")
+    _logger.info(f"Fetching artwork for {artist} - {title}")
+
     url = f"https://api.deezer.com/search?q=artist:'{artist}' track:'{title}'"
+
     r = requests.get(url)
+
     if r.status_code == 200:
         data = r.json()
         if data['total'] > 0:

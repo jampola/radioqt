@@ -1,4 +1,7 @@
 from pyradios import RadioBrowser
+from logging import getLogger
+
+_logger = getLogger(__name__)
 
 rb = RadioBrowser()
 
@@ -57,9 +60,12 @@ See details:
 """
 
 def get_stream_list(text, search_option):
-    if search_option == "Name":
-        return rb.search(name=text, hidebroken=True)
-    elif search_option == "Tag":
-        return rb.search(tag=text, hidebroken=True)
-    elif search_option == "Country":
-        return rb.search(country=text, hidebroken=True)
+    try:
+        if search_option == "Name":
+            return rb.search(name=text, hidebroken=True)
+        elif search_option == "Tag":
+            return rb.search(tag=text, hidebroken=True)
+        elif search_option == "Country":
+            return rb.search(country=text, hidebroken=True)
+    except Exception as e:
+        _logger.error(f"error: {e}")

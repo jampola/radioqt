@@ -39,6 +39,11 @@ class SearchWindow(QtWidgets.QWidget, Ui_Form):
         search_text = self.txtSearch.text()
         search_option = self.comboSearchOption.currentText()
         results = get_stream_list(search_text, search_option)
+
+        if results == 'error':
+            QtWidgets.QMessageBox.critical(self, "Error", "Error connecting to radio-browser.info API")
+            return
+
         if results:
             self.treeStationSearchResult.clear()
             for url in results:

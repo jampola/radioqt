@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="lblBuild">
    <property name="geometry">
     <rect>
      <x>6</x>
@@ -38,7 +38,10 @@
     <string notr="true">text-decoration: underline;</string>
    </property>
    <property name="text">
-    <string>Version 0.1, Build 2021-01-01</string>
+    <string>0.11</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="label_3">
@@ -51,7 +54,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Written by James Bos</string>
+    <string>James Bos</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

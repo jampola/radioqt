@@ -118,7 +118,6 @@ class GetMetaWorker(QThread):
                 except:
                     pass
 
-
                 self.last_song = self.song
                 self.signal.emit({'title': self.song, 'has_art': art})
 
