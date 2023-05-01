@@ -1,6 +1,6 @@
 #!/usr/bin/python3
+import os.path
 import vlc
-from lib.ui.mainwindow import Ui_MainWindow
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction, QTreeWidgetItem
@@ -17,7 +17,9 @@ from os import path,environ
 from get_meta import streamscrobbler
 from get_artwork import get_artwork_by_title_artist
 
+from lib.ui.mainwindow import Ui_MainWindow
 
+from log_window import LogWindow
 from add_station import AddStationWindow
 from about_window import AboutWindow
 from prefs_window import PrefsWindow
@@ -31,40 +33,28 @@ environ["VLC_PLUGIN_PATH"] = "/usr/lib/x86_64-linux-gnu/"
 # Try look for a user config and set defaults if needed
 HOMEDIR = Path.home()
 
-if not path.exists(f"{HOMEDIR}/.radioqt"):
+if not path.exists(f"{HOMEDIR}/.config/radioqt/radioqt.ini"):
     config_path = "/etc/radioqt.ini"
 else:
-    config_path = f"{HOMEDIR}/.radioqt"
+    config_path = f"{HOMEDIR}/.config/radioqt/radioqt.ini"
 
 config.read(config_path)
 
-# Look for user defined config
-# FAVORITES = False
-FAVORITES = config['PATHS']['lefavsjson']
-# STATIONS = False
-STATIONS = config['PATHS']['lestationjson']
+FAVORITES = os.path.expanduser(config['PATHS']['lefavsjson'])
+STATIONS = os.path.expanduser(config['PATHS']['lestationjson'])
 
-# if no user defined config, create a file
-if not FAVORITES:
-    FAVORITES = f"{HOMEDIR}/.favorites"
-if not STATIONS:
-    STATIONS = f"{HOMEDIR}/.stations"
-
-def _check_json_files_exist(filetype,filename):
+def _check_json_files_exist(filename):
     """ Check if the required json files exist, if not, create empty ones
     """
     if not path.exists(filename):
         print(f"file {filename} does not exist, creating...")
 
-        with open(filename,'w') as outfile:
+        with open(filename,'w+') as outfile:
             outfile.write("{}")
 
 # Check if the file exists, if not, create it
-_check_json_files_exist('favorites',FAVORITES)
-_check_json_files_exist('stations',STATIONS)
-
-# Checking for files here for now
-from log_window import LogWindow
+_check_json_files_exist(FAVORITES)
+_check_json_files_exist(STATIONS)
 
 with open(FAVORITES) as fav_json_file:
     favorite_list = json.load(fav_json_file)
@@ -185,9 +175,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Config options
         self.app_start_minimized = config.getboolean('DEFAULT','optBoolMinimized') # keep a track if the app is shown
-        # self.app_start_minimized = True # keep a track if the app is shown
         self.show_song_tooltips = config.getboolean('DEFAULT','optbooltooltips') # Show the song tooltips in tray
-        # self.show_song_tooltips = True # Show the song tooltips in tray
 
         # Assign actions for tray
         fave_action = QAction("Add to Favorites", self)
@@ -250,7 +238,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.button_favorite = QtGui.QIcon("/usr/share/radioqt/icons/emblem-favorite.png")
 
         self._set_default_artwork()
-
 
         self.btnFav.setIcon(self.button_favorite)
         self.btnToggle.setIcon(self.playback_start_icon)

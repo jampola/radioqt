@@ -1,32 +1,16 @@
 import json
 import datetime
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QGridLayout, QWidget, QCheckBox, QSystemTrayIcon, \
-    QSpacerItem, QSizePolicy, QMenu, QAction, QStyle, qApp, QTreeWidgetItem
-
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtWidgets import QTreeWidgetItem
 import webbrowser
-import configparser
-from pathlib import Path
-
 
 from lib.ui.logwindow import Ui_Form
-
-# config = configparser.RawConfigParser(allow_no_value=True)
-# config_path = f"{Path.home()}/.radioqt.ini"
-# config.read(config_path)
-
-# FAVORITES = config['PATHS']['lefavsjson']
-
-# with open(FAVORITES) as fav_json_file:
-#     favorite_list = json.load(fav_json_file)
 
 class LogWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self, parent=None, config=None, favorites=None):
         super(LogWindow, self).__init__(parent)
 
         self.config = config
-        # self.favorites = config['PATHS']['lefavsjson']
         self.favorites = favorites
 
         self.titles = []

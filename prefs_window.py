@@ -1,13 +1,7 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QGridLayout, QWidget, QCheckBox, QSystemTrayIcon, \
-    QSpacerItem, QSizePolicy, QMenu, QAction, QStyle, qApp, QTreeWidgetItem
+from PyQt5 import QtWidgets
 
 from lib.ui.prefs import Ui_Prefs
 import functools
-import io
-from pathlib import Path
-
-# config_path = f"{Path.home()}/.radioqt"
 
 class PrefsWindow(QtWidgets.QWidget, Ui_Prefs):
     def __init__(self, parent=None,config=None,config_path=None):
@@ -22,8 +16,6 @@ class PrefsWindow(QtWidgets.QWidget, Ui_Prefs):
         self.optBoolMinimized.clicked.connect(functools.partial(self.update_prefs, 'optBoolMinimized'))
         self.leStationsJSON.textEdited.connect(functools.partial(self.update_prefs, 'leStationJSON'))
         self.leFavsJSON.textEdited.connect(functools.partial(self.update_prefs, 'leFavsJSON'))
-
-        # self.load_prefs()
 
     def close_window(self):
         self.save_prefs()
@@ -57,5 +49,5 @@ class PrefsWindow(QtWidgets.QWidget, Ui_Prefs):
             self.config['PATHS']['leFavsJSON'] = data
 
     def save_prefs(self):
-        with open(self.config_path, 'w') as configfile:    # save
+        with open(self.config_path, 'w') as configfile:
             self.config.write(configfile)

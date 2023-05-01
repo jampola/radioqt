@@ -21,7 +21,7 @@ class Ui_Form(object):
         sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
         Form.setSizePolicy(sizePolicy)
         Form.setMinimumSize(QtCore.QSize(650, 450))
-        Form.setMaximumSize(QtCore.QSize(650, 450))
+        Form.setMaximumSize(QtCore.QSize(65535, 65535))
         Form.setMouseTracking(True)
         self.verticalLayout = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout.setObjectName("verticalLayout")

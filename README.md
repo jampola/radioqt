@@ -1,4 +1,4 @@
-# RadIOqt
+# RadIOqt 0.1
 
 Shoutcast/Icecast player
 
@@ -12,8 +12,6 @@ See requirements.txt for a full list of dependencies.
 # Running the .py
 
 Ensure both of the above dependencies are installed and run ```radio.py``` just how you would any other Python file.
-
-Running the install script will copy any of the image assets and configuration files to their appropriate location. If you have a precompiled binary, it will copy it from dist/radio to /usr/local/bin/radioqt
 
 # Building the Binary
 
