@@ -20,6 +20,7 @@ class Ui_About(object):
         self.lblBuild = QtWidgets.QLabel(About)
         self.lblBuild.setGeometry(QtCore.QRect(6, 110, 191, 20))
         self.lblBuild.setStyleSheet("text-decoration: underline;")
+        self.lblBuild.setText("")
         self.lblBuild.setAlignment(QtCore.Qt.AlignCenter)
         self.lblBuild.setObjectName("lblBuild")
         self.label_3 = QtWidgets.QLabel(About)
@@ -46,9 +47,8 @@ class Ui_About(object):
     def retranslateUi(self, About):
         _translate = QtCore.QCoreApplication.translate
         About.setWindowTitle(_translate("About", "Form"))
-        self.lblBuild.setText(_translate("About", "0.11"))
         self.label_3.setText(_translate("About", "James Bos"))
-        self.label_4.setText(_translate("About", "<a href=\"#\">Source and License</a>"))
+        self.label_4.setText(_translate("About", "<html><head/><body><p><a href=\"https://github.com/jampola/radioqt\"><span style=\" text-decoration: underline; color:#0000ff;\">Source and License</span></a></p></body></html>"))
         self.btnCloseAbout.setText(_translate("About", "Close"))
 
 

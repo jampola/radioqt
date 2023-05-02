@@ -10,6 +10,7 @@ class AboutWindow(QtWidgets.QWidget, Ui_About):
 
         self.logo = QtGui.QPixmap('/usr/share/radioqt/pixmaps/logo.png')
         self.lblAboutIcon.setPixmap(self.logo)
+        self.lblBuild.setText("0.1")
 
         self.btnCloseAbout.clicked.connect(self.close)
 
