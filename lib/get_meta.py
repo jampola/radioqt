@@ -1,12 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-import httplib2 as http
-import http.client
 import re
-# from urlparse import urlparse
-from urllib.parse import urljoin
-
-import pprint
 import urllib.request
 
 class streamscrobbler:
