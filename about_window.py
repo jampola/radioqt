@@ -1,6 +1,4 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QGridLayout, QWidget, QCheckBox, QSystemTrayIcon, \
-    QSpacerItem, QSizePolicy, QMenu, QAction, QStyle, qApp, QTreeWidgetItem
+from PyQt5 import QtWidgets, QtGui
 
 from lib.ui.about import Ui_About
 
@@ -12,6 +10,7 @@ class AboutWindow(QtWidgets.QWidget, Ui_About):
 
         self.logo = QtGui.QPixmap('/usr/share/radioqt/pixmaps/logo.png')
         self.lblAboutIcon.setPixmap(self.logo)
+        self.lblBuild.setText("0.1")
 
         self.btnCloseAbout.clicked.connect(self.close)
 

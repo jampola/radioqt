@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="lblBuild">
    <property name="geometry">
     <rect>
      <x>6</x>
@@ -38,7 +38,10 @@
     <string notr="true">text-decoration: underline;</string>
    </property>
    <property name="text">
-    <string>Version 0.1, Build 2021-01-01</string>
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="label_3">
@@ -51,7 +54,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Written by James Bos</string>
+    <string>James Bos</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -67,7 +70,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&lt;a href=&quot;#&quot;&gt;Source and License&lt;/a&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/jampola/radioqt&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Source and License&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

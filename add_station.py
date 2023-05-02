@@ -1,7 +1,5 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QGridLayout, QWidget, QCheckBox, QSystemTrayIcon, \
-    QSpacerItem, QSizePolicy, QMenu, QAction, QStyle, qApp, QTreeWidgetItem
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import pyqtSignal
 
 from lib.ui.addstation import Ui_StationForm
 

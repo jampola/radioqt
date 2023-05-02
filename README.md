@@ -1,4 +1,4 @@
-# RadIOqt
+# RadIOqt 0.1
 
 Shoutcast/Icecast player
 
@@ -7,15 +7,11 @@ Shoutcast/Icecast player
 Plays back shoutcast and icecast streams using VLC's Python bindings.
 
 # Requirements
-
-* python3-pyqt5
-* python3-vlc (if not using a compiled binary)
+See requirements.txt for a full list of dependencies.
 
 # Running the .py
 
 Ensure both of the above dependencies are installed and run ```radio.py``` just how you would any other Python file.
-
-Running the install script will copy any of the image assets and configuration files to their appropriate location. If you have a precompiled binary, it will copy it from dist/radio to /usr/local/bin/radioqt
 
 # Building the Binary
 
@@ -27,6 +23,6 @@ Then build inside of the project folder
 
 and the resulting binary will be located in **dist/radio**
 
-# Bugs
+# Bugs / Feature Requests
 
-Send them my way: fullname [at] gmail **dot** com
+Open up an issue on the Github page and I'll take a look at it. PR's welcome :)

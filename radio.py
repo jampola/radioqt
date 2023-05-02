@@ -1,11 +1,9 @@
 #!/usr/bin/python3
+import os.path
 import vlc
-from lib.ui.mainwindow import Ui_MainWindow
-# from about import Ui_About
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QGridLayout, QWidget, QCheckBox, QSystemTrayIcon, \
-    QSpacerItem, QSizePolicy, QMenu, QAction, QStyle, qApp, QTreeWidgetItem
+from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction, QTreeWidgetItem
 import sys
 import time
 from pathlib import Path
@@ -15,11 +13,17 @@ import functools
 import configparser
 from random import shuffle
 from os import path,environ
-from get_meta import streamscrobbler
 
+from get_meta import streamscrobbler
+from get_artwork import get_artwork_by_title_artist
+
+from lib.ui.mainwindow import Ui_MainWindow
+
+from log_window import LogWindow
 from add_station import AddStationWindow
 from about_window import AboutWindow
 from prefs_window import PrefsWindow
+from search_window import SearchWindow
 
 config = configparser.RawConfigParser(allow_no_value=True)
 
@@ -29,38 +33,28 @@ environ["VLC_PLUGIN_PATH"] = "/usr/lib/x86_64-linux-gnu/"
 # Try look for a user config and set defaults if needed
 HOMEDIR = Path.home()
 
-if not path.exists(f"{HOMEDIR}/.radioqt"):
+if not path.exists(f"{HOMEDIR}/.config/radioqt/radioqt.ini"):
     config_path = "/etc/radioqt.ini"
 else:
-    config_path = f"{HOMEDIR}/.radioqt"
+    config_path = f"{HOMEDIR}/.config/radioqt/radioqt.ini"
 
 config.read(config_path)
 
-# Look for user defined config
-FAVORITES = config['PATHS']['lefavsjson']
-STATIONS = config['PATHS']['lestationjson']
+FAVORITES = os.path.expanduser(config['PATHS']['lefavsjson'])
+STATIONS = os.path.expanduser(config['PATHS']['lestationjson'])
 
-# if no user defined config, create a file
-if not FAVORITES:
-    FAVORITES = f"{HOMEDIR}/.favorites"
-if not STATIONS:
-    STATIONS = f"{HOMEDIR}/.stations"
-
-def _check_json_files_exist(filetype,filename):
+def _check_json_files_exist(filename):
     """ Check if the required json files exist, if not, create empty ones
     """
     if not path.exists(filename):
         print(f"file {filename} does not exist, creating...")
 
-        with open(filename,'w') as outfile:
+        with open(filename,'w+') as outfile:
             outfile.write("{}")
 
 # Check if the file exists, if not, create it
-_check_json_files_exist('favorites',FAVORITES)
-_check_json_files_exist('stations',STATIONS)
-
-# Checking for files here for now
-from log_window import LogWindow
+_check_json_files_exist(FAVORITES)
+_check_json_files_exist(STATIONS)
 
 with open(FAVORITES) as fav_json_file:
     favorite_list = json.load(fav_json_file)
@@ -79,6 +73,7 @@ class GetMetaWorker(QThread):
         self.running = True
         self.url = ""
         self.song = ""
+        self.last_song = ""
         self.ss = streamscrobbler()
 
     def stop_thread(self,data):
@@ -97,14 +92,26 @@ class GetMetaWorker(QThread):
         while True:
             time.sleep(1)
             if self.running:
+                art = False
                 try:
                     self.song = self.ss.getAllData(address=self.url)['metadata']['song']
                 except:
                     self.song = "Unable to fetch song meta data"
 
-                self.signal.emit({'title':self.song})
+                try:
+                    if self.last_song != self.song:
+                        artist = self.song.split('-')[0]
+                        title = self.song.split('-')[1]
+                        art = get_artwork_by_title_artist(artist,title)
+                    else:
+                        art = True
+                except:
+                    pass
 
-                time.sleep(4)
+                self.last_song = self.song
+                self.signal.emit({'title': self.song, 'has_art': art})
+
+                time.sleep(5)
             else:
                 return
 
@@ -120,11 +127,14 @@ class UpdateStatusWorker(QThread):
         self.running = False
 
     def on_message_from_main(self,data):
+        if self.running:
+            return
         self.status_message = data
         self.running = True
 
     def run(self):
         while True:
+            time.sleep(.1)
             if self.running:
                 self.signal.emit(self.status_message)
                 time.sleep(2)
@@ -195,12 +205,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Connect other windows
         self.logform = LogWindow(config=config,favorites=FAVORITES)
         self.about = AboutWindow()
+
+        self.search_window = SearchWindow()
+        self.search_window.station_signal.connect(self.add_to_playlist)
+
         self.prefs = PrefsWindow(config=config,config_path=config_path)
+
         self.add_station = AddStationWindow()
         self.add_station.station_signal.connect(self.add_to_playlist)
         self.selected_station_signal.connect(self.add_station.edit_station)
 
         # Connecting button
+        self.sliderVolume.valueChanged.connect(self.adjust_volume)
         self.btnToggle.clicked.connect(self.play_toggle)
         self.btnShuffle.clicked.connect(functools.partial(self.play_station,shuffle_url=True))
         self.twStationList.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -211,6 +227,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.menuActionQuit.triggered.connect(self.quit_app)
         self.actionAddStation.triggered.connect(self.show_addstation_window)
         self.actionAbout.triggered.connect(self.show_about_window)
+        self.actionSearch.triggered.connect(self.show_search_window)
         self.btnFav.clicked.connect(self.add_favorite)
         # self.actionMinimize.triggered.connect(self.hide)
         self.menuActionMinimize.triggered.connect(self.show_hide_app)
@@ -219,6 +236,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.playback_stop_icon = QtGui.QIcon("/usr/share/radioqt/icons/media-playback-stop.png")
         self.shuffle_station = QtGui.QIcon("/usr/share/radioqt/icons/media-playlist-shuffle.png")
         self.button_favorite = QtGui.QIcon("/usr/share/radioqt/icons/emblem-favorite.png")
+
+        self._set_default_artwork()
 
         self.btnFav.setIcon(self.button_favorite)
         self.btnToggle.setIcon(self.playback_start_icon)
@@ -245,6 +264,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def show_about_window(self):
         self.about.show()
+
+    def show_search_window(self):
+        self.search_window.show()
 
     def quit_app(self):
         sys.exit()
@@ -280,7 +302,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 with open(FAVORITES, 'w') as outfile:
                     json.dump(favorite_list, outfile)
 
-        self.update_status_signal.emit("<b style='color:green;'>Song added to favorites</b>")
+            self.update_status_signal.emit("<b style='color:green;'>Song added to favorites</b>")
+
+    def set_starting_volume(self):
+        self.sliderVolume.setValue(self.mediaplayer.audio_get_volume())
 
     def recreate_playlist(self,add=False):
         self.twStationList.clear()
@@ -294,7 +319,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         for x in self.playlist_urls_sorted:
             QTreeWidgetItem(self.twStationList,[playlist_urls[x],x])
 
-        if add: pass
+        if add:
+            pass
 
     def menu_context_tree(self, event):
         self.menu_contextuelAlb = QtWidgets.QMenu(self.twStationList)
@@ -323,6 +349,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         self.tray_icon.showMessage("RadIO",f"{data['title']}",msecs=2000)
 
                 self.currently_playing = data['title']
+                self.set_starting_volume()
+
+                # todo: explicitly check if artwork is available
+                if data.get('has_art'):
+                    self.now_playing = QtGui.QPixmap("/tmp/radioimg.jpg")
+                    scaled = self.now_playing.scaled(128,128)
+                    self.lblStationImage.setPixmap(scaled)
+                else:
+                    self._set_default_artwork()
         else:
             self.lblNowPlaying.setText("Nothing Playing")
             self.lblNowStationName.setText("")
@@ -349,6 +384,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             json.dump(playlist_urls, outfile)
 
         self.recreate_playlist()
+
+    def _set_default_artwork(self):
+        self.now_playing = QtGui.QPixmap("/usr/share/radioqt/pixmaps/noart.png")
+        scaled = self.now_playing.scaled(128, 128)
+        self.lblStationImage.setPixmap(scaled)
 
     def _get_selected_station(self):
         getSelected = self.twStationList.selectedItems()
@@ -388,14 +428,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.lblStationName.setText(station_name)
         self.lblStatus.setText('Playing')
 
+    def set_volume(self, vol_val):
+        self.mediaplayer.audio_set_volume(vol_val)
+
+    def adjust_volume(self):
+        self.set_volume(self.sliderVolume.value())
+
     def play_toggle(self):
         if self.mediaplayer.is_playing():
             self.mediaplayer.stop()
             self.meta_start_stop_signal.emit("stop")
             self.btnToggle.setIcon(self.playback_start_icon)
-            self.lblStationName.setText('')
-            self.lblNowPlaying.setText('')
+            self.lblStationName.setText('No Station')
+            self.lblNowPlaying.setText('Not Playing')
             self.lblStatus.setText('Stopped')
+            self._set_default_artwork()
 
     def closeEvent(self,e):
         self.get_meta.stop_thread()

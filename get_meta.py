@@ -28,8 +28,6 @@ class streamscrobbler:
 
     # this is the fucntion you should call with the url to get all data sorted as a object in the return
     def getServerInfo(self, url):
-        print("shoutcast check v.2")
-
         if url.endswith('.pls') or url.endswith('listen.pls?sid=1'):
             address = self.checkPLS(url)
         else:
@@ -42,7 +40,6 @@ class streamscrobbler:
         return meta_interval
 
     def getAllData(self, address):
-        shoutcast = False
         status = 0
 
         request = urllib.request.Request(address)
@@ -53,7 +50,6 @@ class streamscrobbler:
         try:
             response = urllib.request.urlopen(request, timeout=6)
             headers = self.getHeaders(response)
-            pp = pprint.PrettyPrinter(indent=4)
 
             if "server" in headers:
                 shoutcast = headers['server']
@@ -99,7 +95,6 @@ class streamscrobbler:
             print ("    Error: " + str(err))
             return {"status": status, "metadata": None}
 
-
     def checkPLS(self, address):
         try:
             response = urllib.request.urlopen(address, timeout=2)
@@ -114,7 +109,6 @@ class streamscrobbler:
                 return bool(0)
         except Exception:
             return bool(0)
-
 
     def shoutcastCheck(self, response, headers, itsOld):
         if itsOld is not True:
@@ -185,7 +179,6 @@ class streamscrobbler:
             return False
         else:
             return True
-        
 
     def stripTags(self, text):
         finished = 0
@@ -198,10 +191,3 @@ class streamscrobbler:
                     text = text[:start] + text[start + stop + 1:]
                     finished = 0
         return text
-
-# streamscrobbler = streamscrobbler()
-
-# streamscrobbler.getServerInfo('http://ice4.somafm.com/indiepop-128-mp3')
-# streamscrobbler.getAllData(address='http://ice4.somafm.com/indiepop-128-mp3')
-# streamscrobbler.getAllData(address='http://postrocks.me:8000')
-# streamscrobbler.getAllData(address='http://ice4.somafm.com/indiepop-128-mp3')
