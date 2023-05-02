@@ -15,7 +15,7 @@ from random import shuffle
 from os import path,environ
 
 from lib.get_meta import streamscrobbler
-from lib.get_artwork import get_artwork_by_title_artistgit
+from lib.get_artwork import get_artwork_by_title_artist
 from lib.ui.mainwindow import Ui_MainWindow
 
 from log_window import LogWindow
