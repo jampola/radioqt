@@ -4,7 +4,7 @@ from PyQt5.QtCore import pyqtSignal
 
 from lib.ui.searchwindow import Ui_Form
 
-from icecast_stream_list import get_stream_list
+from lib.icecast_stream_list import get_stream_list
 
 class SearchWindow(QtWidgets.QWidget, Ui_Form):
     station_signal = pyqtSignal(list)
