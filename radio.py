@@ -385,7 +385,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.recreate_playlist()
 
     def _set_default_artwork(self):
-        self.now_playing = QtGui.QPixmap("/usr/share/radioqt/pixmaps/noart.png")
+        self.now_playing = QtGui.QPixmap("/usr/share/radioqt/icons/noart.png")
         scaled = self.now_playing.scaled(128, 128)
         self.lblStationImage.setPixmap(scaled)
 

@@ -8,7 +8,7 @@ class AboutWindow(QtWidgets.QWidget, Ui_About):
         super(AboutWindow, self).__init__(parent)
         self.setupUi(self)
 
-        self.logo = QtGui.QPixmap('/usr/share/radioqt/pixmaps/logo.png')
+        self.logo = QtGui.QPixmap('/usr/share/radioqt/icons/logo.png')
         self.lblAboutIcon.setPixmap(self.logo)
         self.lblBuild.setText("0.1")
 
